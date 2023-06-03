@@ -22,11 +22,50 @@ public class Cancel_Flight_Ticket extends javax.swing.JFrame {
     }
     
     public void Delete(){
-//        String add1;
-//        String sql3="select Available_Seats from flight where Ticket_No=? ";
+        String add1 = "0";
+        String sql3 = "SELECT Available_Seats FROM flight WHERE Flight_Id = ?";
+
+        try {
+            pst = conn.prepareStatement(sql3);
+            pst.setString(1, fid.getText());
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                add1 = rs.getString("Available_Seats");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
+        // Calculate the new available seats after canceling the ticket
+        int availableSeats = Integer.parseInt(add1) + Integer.parseInt(seat.getText());
+
+        String sql = "UPDATE flight SET Available_Seats = ? WHERE Flight_Id = ?";
+
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, Integer.toString(availableSeats));
+            pst.setString(2, fid.getText());
+            pst.executeUpdate(); // Use executeUpdate() for UPDATE statements
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
+        String sql1 = "DELETE FROM book_ticket WHERE Ticket_No = ?";
+
+        try {
+            pst = conn.prepareStatement(sql1);
+            pst.setString(1, tno.getText());
+            pst.executeUpdate(); // Use executeUpdate() for DELETE statements
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+//        String add1="0";
+//        String sql3="select Available_Seats from flight where Flight_Id=? ";
 //        try{
 //        pst=conn.prepareStatement(sql3);
-//        pst.setString(1, tno.getText());
+//        pst.setString(1, fid.getText());
 //        rs=pst.executeQuery();
 //        if(rs.next()){
 //            add1=rs.getString("Available_Seats");
@@ -35,27 +74,27 @@ public class Cancel_Flight_Ticket extends javax.swing.JFrame {
 //        catch(Exception e){
 //            JOptionPane.showMessageDialog(null,e);
 //        }
-//        String sql="update flight set Available_Seats=? where Ticket_No=?";
+//        String sql="update flight set Available_Seats=? where Flight_Id=?";
 //        try{
 //        pst=conn.prepareStatement(sql);
-//        pst.setString(1,Integer.toString(Integer.parseInt(add1+seat.getText())));
-//        pst.setString(2,tno.getText());
+//        pst.setString(1,Integer.toString(Integer.parseInt(add1)+seat.getText())));
+//        pst.setString(2,fid.getText());
 //        }
 //        catch(Exception e){
 //            JOptionPane.showMessageDialog(null,e);
 //        }
 //            
-        String sql1="delete from book_ticket where Ticket_No=?";
-        try{
-            pst=conn.prepareStatement(sql1);
-            pst.setString(1, tno.getText());
-            pst.execute();
+//        String sql1="delete from book_ticket where Ticket_No=?";
+//        try{
+//            pst=conn.prepareStatement(sql1);
+//            pst.setString(1, tno.getText());
+//            pst.execute();
+//            
+//        }catch(Exception e){
+//            JOptionPane.showMessageDialog(null,e);
+//        }
             
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null,e);
-        }
-            
-    }
+    
     public void Cancel_Ticket(){
         DateFormat da=new SimpleDateFormat("yyy-MM-dd");
         String date=da.format(cdate.getDate());
