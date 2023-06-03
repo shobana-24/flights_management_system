@@ -11,10 +11,7 @@ import net.proteanit.sql.DbUtils;
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 
-/**
- *
- * @author shoba
- */
+
 public class View_Flight_Details extends javax.swing.JFrame {
     Connection conn;
     ResultSet rs;
