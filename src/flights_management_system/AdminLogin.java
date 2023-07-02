@@ -87,8 +87,8 @@ public class AdminLogin extends javax.swing.JFrame {
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(307, 307, 307)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(276, 276, 276)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(86, 170, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -105,52 +105,55 @@ public class AdminLogin extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(40, 40, 40)
-                .addComponent(jButton1)
-                .addContainerGap(208, Short.MAX_VALUE))
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(199, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-        String sql="select * from admin_account where Username=? and Password=?";
-        try{
-            pst=conn.prepareStatement (sql);
 
-            pst.setString(1,jTextField1.getText());
-            pst.setString(2,jTextField2.getText());
-            rs=pst.executeQuery();
-            if(rs.next()){
-                rs.close();
-                pst.close();
 
-                setVisible(false);
-                // Loading ob=new Loading();
-                //ob.setUpLoading();
-                AdminDashboard ob=new AdminDashboard();
-                ob.setVisible(true);
 
-            }else{
-                JOptionPane.showMessageDialog(null, rs);
-            }
-
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e);
-        }finally{
-            try{
-                rs.close();
-                pst.close();
-            }catch(Exception e){
-            }
-        }
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        setVisible(false);
-        AdminDashboard ob=new AdminDashboard();
-        ob.setVisible(true);
+    String username = jTextField1.getText();
+    String password = jTextField2.getText();
+
+    if (username.isEmpty() || password.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Username and password fields should not be empty!");
+    } else {
+        String sql = "SELECT * FROM admin_account WHERE Username = ? AND Password = ?";
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                rs.close();
+                pst.close();
+
+                setVisible(false);
+                String uname = jTextField1.getText();
+                AdminDashboard ob = new AdminDashboard();
+                ob.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid username or password!");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        } finally {
+            try {
+                rs.close();
+                pst.close();
+            } catch (Exception e) {
+                // Handle any exceptions here
+            }
+        }
+    }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

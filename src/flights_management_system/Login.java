@@ -147,38 +147,43 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginActionPerformed
-        // TODO add your handling code here:
-        String sql="select * from account where Username=? and Password=?";
-        try{
-            pst=conn.prepareStatement (sql);
 
-            pst.setString(1,jTextField1.getText());
-            pst.setString(2,jPasswordField1.getText());
-            rs=pst.executeQuery();
-            if(rs.next()){
+            // TODO add your handling code here:
+    String username = jTextField1.getText();
+    String password = jPasswordField1.getText();
+
+    if (username.isEmpty() || password.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Username and password fields should not be empty!");
+    } else {
+        String sql = "SELECT * FROM account WHERE Username = ? AND Password = ?";
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            rs = pst.executeQuery();
+            if (rs.next()) {
                 rs.close();
                 pst.close();
 
                 setVisible(false);
-                // Loading ob=new Loading();
-                //ob.setUpLoading();
-                String uname=jTextField1.getText();
-                userdashboard ob=new userdashboard(uname);
+                String uname = jTextField1.getText();
+                userdashboard ob = new userdashboard(uname);
                 ob.setVisible(true);
-
-            }else{
-                JOptionPane.showMessageDialog(null, "Invalid username or Password!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid username or password!");
             }
-
-        }catch(Exception e){
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-        }finally{
-            try{
+        } finally {
+            try {
                 rs.close();
                 pst.close();
-            }catch(Exception e){
+            } catch (Exception e) {
+                // Handle any exceptions here
             }
         }
+    }
+
 
     }//GEN-LAST:event_LoginActionPerformed
 

@@ -38,7 +38,6 @@ public class Signup extends javax.swing.JFrame {
         Answer = new javax.swing.JTextField();
         create = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        back = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -76,14 +75,6 @@ public class Signup extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setText("Name");
 
-        back.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        back.setText("back");
-        back.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                backActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -96,16 +87,10 @@ public class Signup extends javax.swing.JFrame {
                             .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(create, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(49, 49, 49)
-                                .addComponent(back, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(Sec_Q, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Sec_Q, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(Password, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -115,6 +100,10 @@ public class Signup extends javax.swing.JFrame {
                                 .addComponent(Name, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(Answer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(41, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(create)
+                .addGap(139, 139, 139))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -141,11 +130,9 @@ public class Signup extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Answer))
-                .addGap(24, 24, 24)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(create)
-                    .addComponent(back))
-                .addGap(44, 44, 44))
+                .addGap(39, 39, 39)
+                .addComponent(create)
+                .addGap(29, 29, 29))
         );
 
         jLabel6.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 24)); // NOI18N
@@ -185,30 +172,39 @@ public class Signup extends javax.swing.JFrame {
 
     private void createActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createActionPerformed
         // TODO add your handling code here:
+    try {
+        // Check if the username already exists
+        String checkUsernameSql = "SELECT * FROM account WHERE Username = ?";
+        pst = conn.prepareStatement(checkUsernameSql);
+        pst.setString(1, Username.getText());
+        rs = pst.executeQuery();
 
-        try{
-            String sql="Insert into account(Username,Name,Password,Sec_Q,Answer)values(?,?,?,?,?)";
-            pst=conn.prepareStatement(sql);
-            pst.setString(1,Username.getText());
-            pst.setString(2,Name.getText());
-            pst.setString(3,Password.getText());
-            pst.setString(4,(String) Sec_Q.getSelectedItem());
-            pst.setString(5,Answer.getText());
-            pst.execute();
+        if (rs.next()) {
+            JOptionPane.showMessageDialog(null, "Username already exists. Please choose a different username.");
+        } else {
+            // Insert new account details
+            String insertAccountSql = "INSERT INTO account (Username, Name, Password, Sec_Q, Answer) VALUES (?, ?, ?, ?, ?)";
+            pst = conn.prepareStatement(insertAccountSql);
+            pst.setString(1, Username.getText());
+            pst.setString(2, Name.getText());
+            pst.setString(3, Password.getText());
+            pst.setString(4, (String) Sec_Q.getSelectedItem());
+            pst.setString(5, Answer.getText());
+            pst.executeUpdate();
             JOptionPane.showMessageDialog(null, "New Account Created");
-
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e);
         }
 
-    }//GEN-LAST:event_createActionPerformed
+        rs.close();
+        pst.close();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, e);
+    }
+    setVisible(false);
+    Login ob=new Login();
+    ob.setVisible(true);
 
-    private void backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backActionPerformed
-        // TODO add your handling code here:
-        setVisible(false);
-        Login ob=new Login();
-        ob.setVisible(true);
-    }//GEN-LAST:event_backActionPerformed
+
+    }//GEN-LAST:event_createActionPerformed
 
     /**
      * @param args the command line arguments
@@ -251,7 +247,6 @@ public class Signup extends javax.swing.JFrame {
     private javax.swing.JTextField Password;
     private javax.swing.JComboBox<String> Sec_Q;
     private javax.swing.JTextField Username;
-    private javax.swing.JButton back;
     private javax.swing.JButton create;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

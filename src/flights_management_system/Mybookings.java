@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
+import javax.swing.table.DefaultTableModel;
+import java.sql.ResultSetMetaData;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -17,8 +19,8 @@ import net.proteanit.sql.DbUtils;
  */
 public class Mybookings extends javax.swing.JFrame {
     Connection conn;
-    PreparedStatement pst;
-    ResultSet rs;
+    PreparedStatement pst,pst1;
+    ResultSet rs,rs1;
     static String username;
     public  Mybookings(String username) {
         initComponents();
@@ -26,20 +28,76 @@ public class Mybookings extends javax.swing.JFrame {
         this.username=username;
         fetch(username);
     }
-
-
+    
 public void fetch(String username) {
     try {
-        String sql ="SELECT * FROM book_ticket WHERE C_Name = ?";
-//        System.out.println("SQL query: " + sql);
+        String sql = "SELECT * FROM book_ticket WHERE C_Name = ?";
+        String sql1 = "SELECT * FROM cancel_ticket WHERE C_Name = ?";
+        
         pst = conn.prepareStatement(sql);
+        pst1 = conn.prepareStatement(sql1);
+        
         pst.setString(1, username);
-        rs = pst.executeQuery();
-        jtable.setModel(DbUtils.resultSetToTableModel(rs));
-        } catch (Exception e) {
-            e.printStackTrace();
+        pst1.setString(1, username);
+        
+        ResultSet rs1 = pst.executeQuery();
+        ResultSet rs2 = pst1.executeQuery();
+        
+        // Merge the result sets into a single result set
+        ResultSetMetaData rs1Meta = rs1.getMetaData();
+        ResultSetMetaData rs2Meta = rs2.getMetaData();
+        int columnCount = rs1Meta.getColumnCount();
+        
+        DefaultTableModel model = new DefaultTableModel();
+        
+        // Add column names to the table model
+        for (int i = 1; i <= columnCount; i++) {
+            model.addColumn(rs1Meta.getColumnName(i));
         }
+        
+        // Add rows from the first result set
+        while (rs1.next()) {
+            Object[] rowData = new Object[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                rowData[i - 1] = rs1.getObject(i);
+            }
+            model.addRow(rowData);
+        }
+        
+        // Add rows from the second result set
+        while (rs2.next()) {
+            Object[] rowData = new Object[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                rowData[i - 1] = rs2.getObject(i);
+            }
+            model.addRow(rowData);
+        }
+        
+        // Set the combined result set to the jtable model
+        jtable.setModel(model);
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 }
+
+//
+//public void fetch(String username) {
+//    try {
+//        String sql ="SELECT * FROM book_ticket WHERE C_Name = ?";
+//        String sql1="select *from cancel_ticket where C_Name=?";
+//        pst = conn.prepareStatement(sql);
+//        pst1 = conn.prepareStatement(sql1);
+//        pst.setString(1, username);
+//        pst1.setString(1,username);
+//        rs = pst.executeQuery();
+//        rs1=pst1.executeQuery();
+//        jtable.setModel(DbUtils.resultSetToTableModel(rs));
+//        jtable.setModel(DbUtils.resultSetToTableModel(rs1));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -60,13 +118,13 @@ public void fetch(String username) {
         jtable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jtable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Ticket_no", "Flight_No", "FlightName", "source", "Destination", "Date", "Arrival_Time", "Departure_Time", "Total_Price", "Seats", "Customer Name"
+                "Ticket_no", "Flight_No", "FlightName", "source", "Destination", "Date", "Arrival_Time", "Departure_Time", "Total_Price", "Seats", "Customer Name", "Status"
             }
         ));
         jScrollPane1.setViewportView(jtable);
